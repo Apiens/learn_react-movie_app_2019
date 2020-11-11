@@ -1,85 +1,189 @@
-import React from 'react';
-import PropTypes from "prop-types";
-const foodILike = [
-  {
-    id: 1,
-    name: "Kimchi",
-    image:
-      "http://aeriskitchen.com/wp-content/uploads/2008/09/kimchi_bokkeumbap_02-.jpg",
-    rating: 4.9
-  },
-  {
-    id: 2,
-    name: "Samgyeopsal",
-    image:
-      "https://3.bp.blogspot.com/-hKwIBxIVcQw/WfsewX3fhJI/AAAAAAAAALk/yHxnxFXcfx4ZKSfHS_RQNKjw3bAC03AnACLcBGAs/s400/DSC07624.jpg",
-    rating: 4.5
-  },
-  {
-    id: 3,
-    name: "Bibimbap",
-    image:
-      "http://cdn-image.myrecipes.com/sites/default/files/styles/4_3_horizontal_-_1200x900/public/image/recipes/ck/12/03/bibimbop-ck-x.jpg?itok=RoXlp6Xb",
-    rating: 4.2
-    }
-];
+import React from "react";
+import axios from "axios";
+import Movie from "./Movie";
+import "./App.css";
 
-function Food(props) {
-  console.log(props)
-  return (
-    <div>
-      <h1>{props.name} is delicious!</h1>
-      <img src={props.picture} alt={props.name + " image"}/>
-      <h2>rating: {props.rating}/5</h2>
-    </div>
-  );
+class App extends React.Component {
+  state = {
+    isLoading: true,
+    movies: [],
+  };
+
+  getMovies = async (url) => {
+    const {
+      data: {
+        data: { movies },
+      },
+    } = await axios.get(url);
+    return movies;
+  };
+
+  async componentDidMount() {
+    const url = "https://yts-proxy.now.sh/list_movies.json?sort_by=rating";
+    const movies = await this.getMovies(url);
+    console.log(movies);
+    this.setState({ movies: movies, isLoading: false });
+  }
+
+  render() {
+    const { isLoading, movies } = this.state;
+    return (
+      <section className="container">
+        {isLoading ? (
+          <div className="loader">
+            <li className="loader__template">Loading...</li>
+          </div>
+        ) : (
+          <div className="movies">
+            {movies.map((movie) => (
+              <Movie
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                summary={movie.summary}
+                poster={movie.medium_cover_image}
+                year={movie.year}
+                rating={movie.rating}
+                runtime={movie.runtime}
+                genres={movie.genres}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    );
+  }
 }
 
-Food.propTypes = {
-  name: PropTypes.string.isRequired,
-  picture: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
-}
+// const url = "https://yts-proxy.now.sh/list_movies.json?sort_by=rating";
+// class App extends React.Component {
+//   state = {
+//     isLoading: true,
+//     movies: [],
+//   };
+//   getMovies = async () => {
+//     const {
+//       data: {
+//         data: { movies },
+//       },
+//     } = await axios.get(url);
+//     this.setState({ movies, isLoading: false });
+//   };
+//   componentDidMount() {
+//     this.getMovies();
+//   }
+//   render() {
+//     const { isLoading, movies } = this.state; //isLoading = this.state.isLoading
+//     return (
+//       <section className="container">
+//         {isLoading ? (
+//           <div>
+//             <span className="loader__text">Loading...</span>
+//           </div>
+//         ) : (
+//           <div className="movies">
+//             {movies.map((movie) => (
+//               <Movie
+//                 key={movie.id}
+//                 id={movie.id}
+//                 year={movie.year}
+//                 title={movie.title}
+//                 summary={movie.summary}
+//                 poster={movie.medium_cover_image}
+//                 rating={movie.rating}
+//                 runtime={movie.runtime}
+//                 genres={movie.genres}
+//               />
+//             ))}
+//             ;
+//           </div>
+//         )}
+//       </section>
+//     );
+//   }
+// }
 
-function App() {
-  return (
-    <div className="App">
-      {foodILike.map(food => (
-        <Food 
-          key= {food.id} 
-          name={food.name} 
-          picture={food.image} 
-          rating = {food.rating}/>
-      ))}
-    </div>
-  );
-}
+// class App extends React.Component {
+//   state = {
+//     isLoading: true,
+//     movies: [],
+//   };
+//   componentDidMount() {
+//     setTimeout(() => {
+//       this.setState({ isLoading: false, book: true });
+//     }, 6000);
+//   }
+//   render() {
+//     const { isLoading } = this.state; //isLoading = this.state.isLoading
+//     return <div>{isLoading ? "Loading" : "We are ready"}</div>;
+//   }
+// }
 
-export default App;
+// class App extends React.Component {
+//   state = { count: 0 };
+//   render() {
+//     console.log("I'm rendering~!");
+//     return (
+//       <div>
+//         <h1>Current Number Is: {this.state.count}</h1>
+//         <button
+//           onClick={() => {
+//             this.setState((current) => ({ count: current.count + 1 }));
+//           }}
+//         >
+//           add
+//         </button>
 
+//         <button
+//           onClick={() => {
+//             this.setState((current) => ({ count: current.count - 1 }));
+//           }}
+//         >
+//           subtract
+//         </button>
+//       </div>
+//     );
+//   }
+//   componentDidMount() {
+//     console.log("Component Mounted!");
+//   }
+//   componentDidUpdate() {
+//     console.log("Component Updated!");
+//   }
+// }
+
+// import PropTypes from "prop-types";
 
 // function Food(props) {
-//   console.log(props)
-//   return <h1>{props.name} is delicious!</h1>;
+//   console.log(props);
+//   return (
+//     <div>
+//       <h1>{props.name} is delicious!</h1>
+//       <img src={props.picture} alt={props.name + " image"} />
+//       <h2>rating: {props.rating}/5</h2>
+//     </div>
+//   );
 // }
 
-// function Pet({sound}) {
-//   console.log(sound)
-// return <h1>I say {sound}. Who am I?</h1>
-// }
+// Food.propTypes = {
+//   name: PropTypes.string.isRequired,
+//   picture: PropTypes.string.isRequired,
+//   rating: PropTypes.number.isRequired,
+// };
 
 // function App() {
 //   return (
 //     <div className="App">
-//       Hello World!
-//       <Food 
-//         name = "kimchi"
-//         ingredients = {["cabbage", "radish", "red_pepper"]}
-//         is_tasty = {true}
-//       />
-//       <Pet species = "cat" sound="Meow"/>
-//       <Pet species = "dog" sound="Bowwow"/>
+//       {foodILike.map((food) => (
+//         <Food
+//           key={food.id}
+//           name={food.name}
+//           picture={food.image}
+//           rating={food.rating}
+//         />
+//       ))}
 //     </div>
 //   );
 // }
-// export default App;
+
+export default App;
